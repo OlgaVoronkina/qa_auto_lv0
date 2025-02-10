@@ -9,9 +9,18 @@ public class Student2 {
     private String studentName;
     private String id;
 
+    public Student2() {
+        this.studentName = "unknown";
+        this.id = "unknown";
+    }
     public Student2(String studentName, String id) {
         this.studentName = studentName;
         this.id = id;
+    }
+
+    public Student2(String studentName) {
+        this.studentName = studentName;
+        this.id = "id_" + studentName;
     }
 
     @Override
@@ -20,5 +29,13 @@ public class Student2 {
                 "studentName='" + studentName + '\'' +
                 ", id='" + id + '\'' +
                 '}';
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public String getId() {
+        return id;
     }
 }

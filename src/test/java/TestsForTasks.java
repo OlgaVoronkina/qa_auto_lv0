@@ -73,17 +73,27 @@ public class TestsForTasks {
     //Управление списком студентов
     @Test
     public void students(){
+        //если id не меняется
         Student2 student1 = new Student2("Olga", "1");
         Student2 student2 = new Student2("Katya", "2");
         Student2 student3 = new Student2("Nik", "3");
+        Student2 student0 = new Student2();
+        Student2 student4 = new Student2("Mia");
+
+        System.out.println(student0.toString());
+        System.out.println(student1);
+        System.out.println(student4);
 
         StudentManager studentManager = new StudentManager();
         studentManager.addStudent(student1);
         studentManager.addStudent(student2);
         studentManager.addStudent(student3);
+        studentManager.addStudent(student0);
+        studentManager.addStudent(student4);
         System.out.println(studentManager.getStudentsList());
 
         studentManager.removeStudent(student2);
+        studentManager.removeStudent("id_Mia");
         System.out.println(studentManager.getStudentsList());
     }
 
