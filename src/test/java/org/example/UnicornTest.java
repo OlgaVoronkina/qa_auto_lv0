@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import org.example.api.UnicornRequests;
+import org.example.api.models.Unicorn;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,19 +20,15 @@ public class UnicornTest {
     @Test
     public void userShouldBeAbleCreateUnicorn(){
         UnicornRequests unicornRequests = new UnicornRequests();
-        unicornRequests.createUnicorn("{\n" +
-                "    \"name\": \"Белка\",\n" +
-                "    \"tailColor\":\"Белый\"\n" +
-                "}");
+        Unicorn unicorn = new Unicorn("Белка", "Белый");
+        unicornRequests.createUnicorn(unicorn.toJson());
     }
 
     @Test
     public void userShouldBeAbleRemoveUnicorn(){
         UnicornRequests unicornRequests = new UnicornRequests();
-        String id = unicornRequests.createUnicorn("{\n" +
-                "    \"name\": \"Белка\",\n" +
-                "    \"tailColor\":\"Белый\"\n" +
-                "}");
+        Unicorn unicorn = new Unicorn("Белка", "Белый");
+        String id = unicornRequests.createUnicorn(unicorn.toJson());
 
         unicornRequests.getUnicorn(id, 200);
 
@@ -43,17 +40,13 @@ public class UnicornTest {
     @Test
     public void userShouldBeAbleChangeUnicorn(){
         UnicornRequests unicornRequests = new UnicornRequests();
-        String id = unicornRequests.createUnicorn("{\n" +
-                "    \"name\": \"Белка\",\n" +
-                "    \"tailColor\":\"Белый\"\n" +
-                "}");
+        Unicorn unicorn1 = new Unicorn("Белка", "Белый");
+        String id = unicornRequests.createUnicorn(unicorn1.toJson());
 
         unicornRequests.getUnicorn(id, 200);
 
-        unicornRequests.changeUnicorn(id, "{\n" +
-                "    \"name\": \"Белка\",\n" +
-                "    \"tailColor\":\"Красный\"\n" +
-                "}");
+        Unicorn unicorn2 = new Unicorn("Белка", "Красный");
+        unicornRequests.changeUnicorn(id, unicorn2.toJson());
 
         String color = unicornRequests.getUnicorn(id, 200);
         Assertions.assertEquals("Красный", color, "Цвет не соответствует ожидаемому");

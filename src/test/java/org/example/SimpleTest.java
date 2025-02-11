@@ -6,6 +6,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
 import org.example.api.StudentRequests;
+import org.example.api.models.Student;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,24 +18,22 @@ public class SimpleTest {
     public static void setupTests(){
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
         RestAssured.useRelaxedHTTPSValidation();
-        RestAssured.baseURI="https://crudcrud.com/api/792faec9fec64d04b9ccfac0ace61040";
+        RestAssured.baseURI="https://crudcrud.com/api/71ee3b9d43b14b2490a67712f453c282";
     }
     @Test
     public void userShouldBeAbleCreateStudent(){
         //given - When - then BDD
-        StudentRequests.createStudent("{\n" +
-                "    \"name\": \"Саша Иванов\",\n" +
-                "    \"grade\":8\n" +
-                "}");
+        //сериализация из json в объект и наоборот
+        Student student = new Student("Саша Иванов", 8);
+        StudentRequests.createStudent(student.toJson());
     }
 
     @Test
     public void userShouldBeAbleDeleteExistingStudent(){
         //Step 1: user creation
-        String id = StudentRequests.createStudent("{\n" +
-                        "    \"name\": \"Саша Иванов2\",\n" +
-                        "    \"grade\":8\n" +
-                        "}");
+
+        Student student = new Student("Саша Иванов", 8);
+        String id = StudentRequests.createStudent(student.toJson());
 
         //Step 2: removing a user
         StudentRequests.removeStudent(id);
