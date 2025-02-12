@@ -15,40 +15,52 @@ public class UnicornTest {
     public static void setupTests(){
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
         RestAssured.useRelaxedHTTPSValidation();
-        RestAssured.baseURI="https://crudcrud.com/api/71ee3b9d43b14b2490a67712f453c282";
+        RestAssured.baseURI="https://crudcrud.com/api/de49edaa52924e1682be647b79f6c244";
     }
     @Test
     public void userShouldBeAbleCreateUnicorn(){
         UnicornRequests unicornRequests = new UnicornRequests();
-        Unicorn unicorn = new Unicorn("Белка", "Белый");
-        unicornRequests.createUnicorn(unicorn.toJson());
+        Unicorn unicorn = Unicorn.builder()
+                .name("Белка")
+                .tailColor("Белый")
+                .build();
+        unicornRequests.createUnicorn(unicorn);
     }
 
     @Test
     public void userShouldBeAbleRemoveUnicorn(){
         UnicornRequests unicornRequests = new UnicornRequests();
-        Unicorn unicorn = new Unicorn("Белка", "Белый");
-        String id = unicornRequests.createUnicorn(unicorn.toJson());
+        Unicorn unicorn = Unicorn.builder()
+                .name("Белка")
+                .tailColor("Белый")
+                .build();
+        Unicorn createdUnicorn = unicornRequests.createUnicorn(unicorn);
 
-        unicornRequests.getUnicorn(id, 200);
+        unicornRequests.getUnicorn(createdUnicorn.getId(), 200);
 
-        unicornRequests.removeUnicorn(id);
+        unicornRequests.removeUnicorn(createdUnicorn.getId());
 
-        unicornRequests.getUnicorn(id, 404);
+        unicornRequests.getUnicorn(createdUnicorn.getId(), 404);
     }
 
     @Test
     public void userShouldBeAbleChangeUnicorn(){
         UnicornRequests unicornRequests = new UnicornRequests();
-        Unicorn unicorn1 = new Unicorn("Белка", "Белый");
-        String id = unicornRequests.createUnicorn(unicorn1.toJson());
+        Unicorn unicorn1 = Unicorn.builder()
+                .name("Белка")
+                .tailColor("Белый")
+                .build();
+        Unicorn createdUnicorn = unicornRequests.createUnicorn(unicorn1);
 
-        unicornRequests.getUnicorn(id, 200);
+        unicornRequests.getUnicorn(createdUnicorn.getId(), 200);
 
-        Unicorn unicorn2 = new Unicorn("Белка", "Красный");
-        unicornRequests.changeUnicorn(id, unicorn2.toJson());
+        Unicorn unicorn2 = Unicorn.builder()
+                .name("Белка")
+                .tailColor("Красный")
+                .build();
+        unicornRequests.changeUnicorn(createdUnicorn.getId(), unicorn2);
 
-        String color = unicornRequests.getUnicorn(id, 200);
-        Assertions.assertEquals("Красный", color, "Цвет не соответствует ожидаемому");
+        Unicorn unicorn = unicornRequests.getUnicorn(createdUnicorn.getId(), 200);
+        Assertions.assertEquals("Красный", unicorn.getTailColor(), "Цвет не соответствует ожидаемому");
     }
 }

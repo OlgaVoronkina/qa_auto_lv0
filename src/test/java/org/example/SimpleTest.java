@@ -18,29 +18,33 @@ public class SimpleTest {
     public static void setupTests(){
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
         RestAssured.useRelaxedHTTPSValidation();
-        RestAssured.baseURI="https://crudcrud.com/api/71ee3b9d43b14b2490a67712f453c282";
+        RestAssured.baseURI="https://crudcrud.com/api/de49edaa52924e1682be647b79f6c244";
     }
     @Test
     public void userShouldBeAbleCreateStudent(){
-        //given - When - then BDD
-        //сериализация из json в объект и наоборот
-        Student student = new Student("Саша Иванов", 8);
-        StudentRequests.createStudent(student.toJson());
+        Student student = Student.builder()
+                .name("Саша Иванов")
+                .grade(8)
+                .build();
+        StudentRequests.createStudent(student);
     }
 
     @Test
     public void userShouldBeAbleDeleteExistingStudent(){
         //Step 1: user creation
 
-        Student student = new Student("Саша Иванов", 8);
-        String id = StudentRequests.createStudent(student.toJson());
+        Student student = Student.builder()
+                .name("Саша Иванов")
+                .grade(8)
+                .build();
+        Student createdStudent = StudentRequests.createStudent(student);
 
         //Step 2: removing a user
-        StudentRequests.removeStudent(id);
+        StudentRequests.removeStudent(createdStudent.getId());
 
         //Step 3: Check user unavailability
         given()
-                .get("/student/" + id)
+                .get("/student/" + createdStudent.getId())
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_NOT_FOUND);

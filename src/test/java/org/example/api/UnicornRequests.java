@@ -1,13 +1,20 @@
 package org.example.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
+import io.restassured.mapper.ObjectMapperType;
+import org.example.api.models.Student;
+import org.example.api.models.Unicorn;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasKey;
 
 public class UnicornRequests {
-    public String createUnicorn(String body){
+    public static Unicorn createUnicorn(Unicorn unicorn){
+        String jsonUnicorn = UnicornRequests.mappingUnicorn(unicorn);
         return given()
-                .body(body)
+                .body(jsonUnicorn)
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/unicorn")
@@ -16,7 +23,7 @@ public class UnicornRequests {
                 .statusCode(201)
                 .body("$", hasKey("_id"))
                 .extract()
-                .path("_id");
+                .as(Unicorn.class, ObjectMapperType.GSON);
     }
 
     public void removeUnicorn(String id){
@@ -28,18 +35,22 @@ public class UnicornRequests {
                 .statusCode(200);
     }
 
-    public void changeUnicorn(String id, String body){
-        given()
-                .body(body)
+    public static Unicorn changeUnicorn(String id, Unicorn unicorn){
+        String jsonUnicorn = UnicornRequests.mappingUnicorn(unicorn);
+        System.out.println(jsonUnicorn);
+        return given()
+                .body(jsonUnicorn)
                 .contentType(ContentType.JSON)
                 .when()
                 .put("/unicorn/"+id)
                 .then()
                 .assertThat()
-                .statusCode(200);
+                .statusCode(200)
+                .extract()
+                .as(Unicorn.class, ObjectMapperType.GSON);
     }
 
-    public String getUnicorn(String id, int statusCode){
+    public Unicorn getUnicorn(String id, int statusCode){
         return given()
                 .when()
                 .get("/unicorn/"+id)
@@ -47,6 +58,16 @@ public class UnicornRequests {
                 .assertThat()
                 .statusCode(statusCode)
                 .extract()
-                .path("tailColor");
+                .as(Unicorn.class, ObjectMapperType.GSON);
+    }
+
+    public static String mappingUnicorn(Unicorn unicorn){
+        String json =null;
+        try {
+            json = new ObjectMapper().writeValueAsString(unicorn);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return json;
     }
 }
